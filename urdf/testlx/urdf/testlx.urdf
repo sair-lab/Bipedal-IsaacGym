@@ -1,6 +1,20 @@
 <robot name="testlx" version="1.0">
-  <joint name="new_link.000_joint" type="continuous">
-    <limit lower="0" upper="0" effort="0.54000" velocity="8.70000"/>
+  <joint name="hw" type="continuous">
+    <limit lower="0" upper="0" effort="24.09000" velocity="1.26000"/>
+    <origin rpy="-1.57080 0.00000 0.00000" xyz="3.49959 0.08915 -0.59008"/>
+    <parent link="myroot"/>
+    <child link="sub.002"/>
+    <axis xyz="0.00000 0.00000 1.00000"/>
+  </joint>
+  <joint name="lw" type="continuous">
+    <limit lower="0" upper="0" effort="0.54000" velocity="42.30000"/>
+    <origin rpy="-1.57080 -0.00000 -3.14159" xyz="-0.49588 -2.24285 -0.59008"/>
+    <parent link="myroot"/>
+    <child link="sub.001"/>
+    <axis xyz="0.00000 0.00000 1.00000"/>
+  </joint>
+  <joint name="rw" type="continuous">
+    <limit lower="0" upper="0" effort="37.08000" velocity="1.26000"/>
     <origin rpy="-1.57080 0.00000 0.00000" xyz="-0.49588 1.97925 -0.59008"/>
     <parent link="myroot"/>
     <child link="sub"/>
@@ -8,11 +22,16 @@
   </joint>
   <link name="myroot">
     <collision name="Cube_collision">
-      <origin rpy="-0.00000 1.57080 0.00000" xyz="0.48929 -0.02468 0.00386"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
       <geometry>
-        <cylinder radius="1.02468" length="2.97858"/>
+        <mesh filename="../meshes/stl/Cube.stl" scale="1.00000 1.00000 1.00000"/>
       </geometry>
     </collision>
+    <inertial>
+      <inertia ixx="4.60389" ixy="0.12095" ixz="-0.33390" iyy="7.69235" iyz="0.03331" izz="10.97742"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.08486 -0.02017 -0.21391"/>
+      <mass value="13.89100"/>
+    </inertial>
     <visual name="Cube">
       <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
       <material name="Material"/>
@@ -28,11 +47,56 @@
         <cylinder radius="1.00000" length="0.55247"/>
       </geometry>
     </collision>
+    <inertial>
+      <inertia ixx="0.67785" ixy="-0.00000" ixz="-0.00000" iyy="1.23050" iyz="-0.00000" izz="0.67785"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
+      <mass value="2.46100"/>
+    </inertial>
     <visual name="Cube.001">
       <origin rpy="-0.00000 0.00000 -0.00000" xyz="0.00000 0.00000 0.00000"/>
       <material name="Material"/>
       <geometry>
         <mesh filename="../meshes/stl/Cube.001.stl" scale="1.00000 1.00000 1.00000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="sub.001">
+    <collision name="Cube.002_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
+      <geometry>
+        <cylinder radius="1.00000" length="0.55247"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <inertia ixx="0.67785" ixy="-0.00000" ixz="0.00000" iyy="1.23050" iyz="-0.00000" izz="0.67785"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10977"/>
+      <mass value="2.46100"/>
+    </inertial>
+    <visual name="Cube.002">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.00000"/>
+      <material name="Material"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Cube.004.stl" scale="1.00000 1.00000 1.00000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="sub.002">
+    <collision name="Cube.003_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10977"/>
+      <geometry>
+        <cylinder radius="1.00000" length="0.55247"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <inertia ixx="0.67785" ixy="-0.00000" ixz="-0.00000" iyy="1.23050" iyz="-0.00000" izz="0.67785"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10977"/>
+      <mass value="2.46100"/>
+    </inertial>
+    <visual name="Cube.003">
+      <origin rpy="-0.00000 0.00000 -0.00000" xyz="0.00000 0.00000 -0.00000"/>
+      <material name="Material"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Cube.020.stl" scale="1.00000 1.00000 1.00000"/>
       </geometry>
     </visual>
   </link>

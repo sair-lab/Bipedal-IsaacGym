@@ -93,31 +93,51 @@ pose.r = gymapi.Quat(-0.707107, 0.0, 0.0, 0.707107)
 
 actor_handle = gym.create_actor(env, asset, pose, "actor", 0, 1)
 props = gym.get_actor_dof_properties(env, actor_handle)
-props["driveMode"] = (gymapi.DOF_MODE_POS)
-props["stiffness"] = (5000.0)
-props["damping"] = (100.0)
+props["driveMode"] = (gymapi.DOF_MODE_VEL)
+props["stiffness"] = (500.0)
+props["damping"] = (10.0)
 gym.set_actor_dof_properties(env, actor_handle, props)
 
-jointhandle = gym.find_actor_dof_handle(env, actor_handle, 'new_link.000_joint')
+shape_props = gym.get_actor_rigid_shape_properties(env, actor_handle)
+# set_actor_rigid_shape_properties enables setting shape properties for rigid body
+# Properties include friction, rolling_friction, torsion_friction, restitution etc.
+shape_props[0].friction = 1.
+shape_props[0].rolling_friction = 1.
+shape_props[0].torsion_friction = 1.
+gym.set_actor_rigid_shape_properties(env, actor_handle, shape_props)
+
+jointhandle = gym.find_actor_dof_handle(env, actor_handle, 'rw')
 
 num_dofs = gym.get_asset_dof_count(asset)
 dof_states = np.zeros(num_dofs, dtype=gymapi.DofState.dtype)
 startTime=timeit.default_timer()
 angle=0
+speed=0
+gym.apply_dof_effort(env, actor_handle, 200)
 while not gym.query_viewer_has_closed(viewer):
     angle+=0.01
     # step the physics
     gym.simulate(sim)
     gym.fetch_results(sim, True)
-    dof_states[0][0]+=0.1
-    dof_states[0][1]=0
-    #gym.set_dof_target_position(env, jointhandle, angle)
-    #gym.set_dof_target_velocity(env, jointhandle, 1)
-    gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
-
     # update the viewer
     gym.step_graphics(sim)
     gym.draw_viewer(viewer, sim, True)
+
+
+    speed+=0.0001
+    dof_states[0][0]+=-speed
+    dof_states[0][1]=-speed
+
+    dof_states[1][0]+=speed
+    dof_states[1][1]=speed
+
+    dof_states[2][0]+=-speed
+    dof_states[2][1]=-speed
+    print(gym.get_dof_position(env, jointhandle))
+    gym.set_dof_target_position(env, jointhandle, angle)
+    gym.set_dof_target_velocity(env, jointhandle, 1)
+    #gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
+
 
     # Wait for dt to elapse in real time.
     # This synchronizes the physics simulation with the rendering rate.
