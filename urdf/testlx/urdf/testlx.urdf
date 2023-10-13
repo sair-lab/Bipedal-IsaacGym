@@ -1,20 +1,20 @@
 <robot name="testlx" version="1.0">
   <joint name="hw" type="continuous">
-    <limit lower="0" upper="0" effort="24.09000" velocity="1.26000"/>
+    <limit lower="0" upper="0" effort="1000.00000" velocity="1000.00000"/>
     <origin rpy="-1.57080 0.00000 0.00000" xyz="3.49959 0.08915 -0.59008"/>
     <parent link="myroot"/>
     <child link="sub.002"/>
     <axis xyz="0.00000 0.00000 1.00000"/>
   </joint>
   <joint name="lw" type="continuous">
-    <limit lower="0" upper="0" effort="0.54000" velocity="42.30000"/>
+    <limit lower="0" upper="0" effort="1000.00000" velocity="1000.00000"/>
     <origin rpy="-1.57080 -0.00000 -3.14159" xyz="-0.49588 -2.24285 -0.59008"/>
     <parent link="myroot"/>
     <child link="sub.001"/>
     <axis xyz="0.00000 0.00000 1.00000"/>
   </joint>
   <joint name="rw" type="continuous">
-    <limit lower="0" upper="0" effort="37.08000" velocity="1.26000"/>
+    <limit lower="0" upper="0" effort="1000.00000" velocity="1000.00000"/>
     <origin rpy="-1.57080 0.00000 0.00000" xyz="-0.49588 1.97925 -0.59008"/>
     <parent link="myroot"/>
     <child link="sub"/>
@@ -38,7 +38,7 @@
     <collision name="Cube.001_collision">
       <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
       <geometry>
-        <sphere radius="1.44094"/>
+        <cylinder radius="1.00000" length="0.55247"/>
       </geometry>
     </collision>
     <inertial>
@@ -58,7 +58,7 @@
     <collision name="Cube.002_collision">
       <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
       <geometry>
-        <sphere radius="1.44094"/>
+        <cylinder radius="1.00000" length="0.55247"/>
       </geometry>
     </collision>
     <inertial>

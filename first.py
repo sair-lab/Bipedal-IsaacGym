@@ -25,16 +25,26 @@ class AssetDesc:
         self.fixed = fixed
         self.mesh_normal_mode = mesh_normal_mode
 
+class MyMotor:
+    def __init__(self,env,jointName:str):
+        self.env=env
+        actor_handle=0
+        self.jointHandle=gym.find_actor_dof_handle(env, actor_handle, jointName)
+    
+    def setSpeed(self,speed):
+        gym.set_dof_target_velocity(env, self.jointHandle, speed)
 
 asset_desc = AssetDesc("urdf/testlx/urdf/testlx.urdf", False)
 args = gymutil.parse_arguments()
 
 # initialize gym
 gym = gymapi.acquire_gym()
-
+print(dir(gym))
 # configure sim
 sim_params = gymapi.SimParams()
 sim_params.dt = dt = 1.0 / 60.0
+sim_params.gravity=gymapi.Vec3(0.0, -9.8, 0.0)
+args.physics_engine= gymapi.SIM_PHYSX
 if args.physics_engine == gymapi.SIM_FLEX:
     pass
 elif args.physics_engine == gymapi.SIM_PHYSX:
@@ -68,6 +78,7 @@ asset_options = gymapi.AssetOptions()
 asset_options.fix_base_link = asset_desc.fixed
 asset_options.use_mesh_materials = True
 asset_options.mesh_normal_mode = asset_desc.mesh_normal_mode
+asset_options.default_dof_drive_mode = gymapi.DOF_MODE_VEL
 
 print("Loading asset '%s' from '%s'" % (asset_file, asset_root))
 asset=gym.load_asset(sim, asset_root, asset_file, asset_options)
@@ -93,29 +104,27 @@ pose.r = gymapi.Quat(-0.707107, 0.0, 0.0, 0.707107)
 
 actor_handle = gym.create_actor(env, asset, pose, "actor", 0, 1)
 props = gym.get_actor_dof_properties(env, actor_handle)
-props["driveMode"] = (gymapi.DOF_MODE_VEL)
-props["stiffness"] = (500.0)
-props["damping"] = (10.0)
+props["stiffness"] = (0.0)
+props["damping"] = (1000.0)
 gym.set_actor_dof_properties(env, actor_handle, props)
 
 shape_props = gym.get_actor_rigid_shape_properties(env, actor_handle)
 # set_actor_rigid_shape_properties enables setting shape properties for rigid body
 # Properties include friction, rolling_friction, torsion_friction, restitution etc.
 for i in shape_props:
-    i.friction = 100.
-    i.rolling_friction = 100.
-    i.torsion_friction = 100.
-    i.restitution = 0.1
-    i.thickness = 0.1
+    i.friction = 1.
+    i.rolling_friction = 1.
+    i.torsion_friction = 1.
 gym.set_actor_rigid_shape_properties(env, actor_handle, shape_props)
 
-jointhandle = gym.find_actor_dof_handle(env, actor_handle, 'rw')
 
+m1=MyMotor(env,'rw')
+m2=MyMotor(env,'lw')
+m3=MyMotor(env,'hw')
 num_dofs = gym.get_asset_dof_count(asset)
-dof_states = np.zeros(num_dofs, dtype=gymapi.DofState.dtype)
 startTime=timeit.default_timer()
 angle=0
-speed=0
+speed=0.1
 gym.apply_dof_effort(env, actor_handle, 200)
 while not gym.query_viewer_has_closed(viewer):
     angle+=0.01
@@ -127,16 +136,11 @@ while not gym.query_viewer_has_closed(viewer):
     gym.draw_viewer(viewer, sim, True)
 
 
-    speed+=0.0001
-    dof_states[0][0]+=-speed
+    speed*=1.001
 
-    dof_states[1][0]+=speed
-
-    dof_states[2][0]+=-speed
-    print(gym.get_dof_position(env, jointhandle))
-    # gym.set_dof_target_position(env, jointhandle, angle)
-    # gym.set_dof_target_velocity(env, jointhandle, 1)
-    gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
+    m1.setSpeed(speed)
+    m2.setSpeed(-speed)
+    m3.setSpeed(speed)
 
 
     # Wait for dt to elapse in real time.
