@@ -17,7 +17,7 @@ Assimp Loading
 import math
 import numpy as np
 from isaacgym import gymapi, gymutil
-
+import timeit
 
 class AssetDesc:
     def __init__(self, file_name, fixed=False, mesh_normal_mode=gymapi.FROM_ASSET):
@@ -53,7 +53,6 @@ sim = gym.create_sim(args.compute_device_id, args.graphics_device_id, args.physi
 # add ground plane
 plane_params = gymapi.PlaneParams()
 gym.add_ground(sim, plane_params)
-
 # create viewer
 viewer = gym.create_viewer(sim, gymapi.CameraProperties())
 if viewer is None:
@@ -84,27 +83,36 @@ cam_pos = gymapi.Vec3(17.2, 2.0, 16)
 cam_target = gymapi.Vec3(5, -2.5, 13)
 gym.viewer_camera_look_at(viewer, None, cam_pos, cam_target)
 
-# cache useful handles
-actor_handles = []
-
 
 env = gym.create_env(sim, env_lower, env_upper, num_per_row)
 
 # add actor
 pose = gymapi.Transform()
-pose.p = gymapi.Vec3(0.0, 1.32, 0.0)
+pose.p = gymapi.Vec3(0.0, 2, 0.0)
 pose.r = gymapi.Quat(-0.707107, 0.0, 0.0, 0.707107)
 
 actor_handle = gym.create_actor(env, asset, pose, "actor", 0, 1)
+props = gym.get_actor_dof_properties(env, actor_handle)
+props["driveMode"] = (gymapi.DOF_MODE_POS)
+props["stiffness"] = (5000.0)
+props["damping"] = (100.0)
+gym.set_actor_dof_properties(env, actor_handle, props)
+
+jointhandle = gym.find_actor_dof_handle(env, actor_handle, 'new_link.000_joint')
 
 num_dofs = gym.get_asset_dof_count(asset)
 dof_states = np.zeros(num_dofs, dtype=gymapi.DofState.dtype)
-
+startTime=timeit.default_timer()
+angle=0
 while not gym.query_viewer_has_closed(viewer):
+    angle+=0.01
     # step the physics
     gym.simulate(sim)
     gym.fetch_results(sim, True)
-    dof_states[0][0]=0.01
+    dof_states[0][0]+=0.1
+    dof_states[0][1]=0
+    #gym.set_dof_target_position(env, jointhandle, angle)
+    #gym.set_dof_target_velocity(env, jointhandle, 1)
     gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
 
     # update the viewer
