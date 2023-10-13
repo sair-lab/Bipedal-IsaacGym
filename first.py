@@ -16,8 +16,10 @@ Assimp Loading
 
 import math
 import numpy as np
-from isaacgym import gymapi, gymutil
+from isaacgym import gymapi, gymutil, gymtorch
 import timeit
+import torch
+import cv2
 
 class AssetDesc:
     def __init__(self, file_name, fixed=False, mesh_normal_mode=gymapi.FROM_ASSET):
@@ -25,14 +27,28 @@ class AssetDesc:
         self.fixed = fixed
         self.mesh_normal_mode = mesh_normal_mode
 
-class MyMotor:
-    def __init__(self,env,jointName:str):
+class Motor:
+    def __init__(self,env,linkName:str):
         self.env=env
         actor_handle=0
-        self.jointHandle=gym.find_actor_dof_handle(env, actor_handle, jointName)
+        self.jointHandle=gym.find_actor_dof_handle(env, actor_handle, linkName)
     
     def setSpeed(self,speed):
         gym.set_dof_target_velocity(env, self.jointHandle, speed)
+
+    def getGlbPos(self):
+        p=gym.get_joint_transform(env,self.jointHandle).p
+        return [p.x,p.y,p.z]
+
+class Joint:
+    def __init__(self,env,linkName:str):
+        self.env=env
+        actor_handle=0
+        self.jointHandle=gym.find_actor_joint_handle(env, actor_handle, linkName)
+    
+    def getGlbPos(self):
+        p=gym.get_joint_transform(env,self.jointHandle).p
+        return [p.x,p.y,p.z]
 
 asset_desc = AssetDesc("urdf/testlx/urdf/testlx.urdf", False)
 args = gymutil.parse_arguments()
@@ -118,14 +134,26 @@ for i in shape_props:
 gym.set_actor_rigid_shape_properties(env, actor_handle, shape_props)
 
 
-m1=MyMotor(env,'rw')
-m2=MyMotor(env,'lw')
-m3=MyMotor(env,'hw')
+m1=Motor(env,'rw')
+m2=Motor(env,'lw')
+m3=Motor(env,'hw')
+e=Joint(env,'end')
 num_dofs = gym.get_asset_dof_count(asset)
 startTime=timeit.default_timer()
 angle=0
 speed=0.1
 gym.apply_dof_effort(env, actor_handle, 200)
+cameraProps=gymapi.CameraProperties()
+cameraProps.enable_tensors = True
+cameraHandle=gym.create_camera_sensor(env, cameraProps)
+cameraPos=gymapi.Transform()
+cameraPos.p=gymapi.Vec3(0,0,0.5)
+sqrt2=math.sqrt(2)/2
+cameraPos.r=gymapi.Quat(0,sqrt2,0,-sqrt2)
+gym.attach_camera_to_body(cameraHandle, env, actor_handle, cameraPos, gymapi.CameraFollowMode(1))
+res=gym.get_camera_image_gpu_tensor(sim,env,0,gymapi.IMAGE_COLOR)
+torch_cam_tensor = gymtorch.wrap_tensor(res)
+#gym.set_camera_location(cameraHandle, env, gymapi.Vec3(5, 1, 0), gymapi.Vec3(0, 1, 0))
 while not gym.query_viewer_has_closed(viewer):
     angle+=0.01
     # step the physics
@@ -134,17 +162,29 @@ while not gym.query_viewer_has_closed(viewer):
     # update the viewer
     gym.step_graphics(sim)
     gym.draw_viewer(viewer, sim, True)
+    gym.render_all_camera_sensors(sim)
+    gym.start_access_image_tensors(sim)
 
+    #res=gym.get_camera_image(sim,env,0,gymapi.IMAGE_COLOR)
 
-    speed*=1.001
+    # cpu=torch_cam_tensor.view(900,-1,4)[:,:,:3].transpose(1,0).cpu()
+    # cv2.imshow('image',cpu.numpy())
+    # cv2.waitKey(1)
+
+    gym.end_access_image_tensors(sim)
+
+    speed+=0.01
 
     m1.setSpeed(speed)
     m2.setSpeed(-speed)
     m3.setSpeed(speed)
 
+    _p=e.getGlbPos()
+    print(_p)
+    _p=m1.getGlbPos()
+    print(_p)
 
-    # Wait for dt to elapse in real time.
-    # This synchronizes the physics simulation with the rendering rate.
+
     gym.sync_frame_time(sim)
 
 print("Done")
