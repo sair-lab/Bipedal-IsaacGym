@@ -1,7 +1,7 @@
 <robot name="testlx" version="1.0">
   <joint name="new_link.000_joint" type="continuous">
     <limit lower="0" upper="0" effort="0.54000" velocity="8.70000"/>
-    <origin rpy="-1.57080 0.00000 0.00000" xyz="-0.57255 2.22731 0.06915"/>
+    <origin rpy="-1.57080 0.00000 0.00000" xyz="-0.49588 1.97925 -0.59008"/>
     <parent link="myroot"/>
     <child link="sub"/>
     <axis xyz="0.00000 0.00000 1.00000"/>
@@ -23,13 +23,13 @@
   </link>
   <link name="sub">
     <collision name="Cube.001_collision">
-      <origin rpy="0.00000 0.00000 0.00000" xyz="0.07667 0.65923 -0.35784"/>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
       <geometry>
-        <box size="2.00000 2.00000 0.55247"/>
+        <cylinder radius="1.00000" length="0.55247"/>
       </geometry>
     </collision>
     <visual name="Cube.001">
-      <origin rpy="-0.00000 0.00000 -0.00000" xyz="0.20880 0.77614 -0.75511"/>
+      <origin rpy="-0.00000 0.00000 -0.00000" xyz="0.00000 0.00000 0.00000"/>
       <material name="Material"/>
       <geometry>
         <mesh filename="../meshes/stl/Cube.001.stl" scale="1.00000 1.00000 1.00000"/>
