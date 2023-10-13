@@ -21,12 +21,6 @@
     <axis xyz="0.00000 0.00000 1.00000"/>
   </joint>
   <link name="myroot">
-    <collision name="Cube_collision">
-      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
-      <geometry>
-        <mesh filename="../meshes/stl/Cube.stl" scale="1.00000 1.00000 1.00000"/>
-      </geometry>
-    </collision>
     <inertial>
       <inertia ixx="4.60389" ixy="0.12095" ixz="-0.33390" iyy="7.69235" iyz="0.03331" izz="10.97742"/>
       <origin rpy="0.00000 0.00000 0.00000" xyz="0.08486 -0.02017 -0.21391"/>
@@ -44,7 +38,7 @@
     <collision name="Cube.001_collision">
       <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
       <geometry>
-        <cylinder radius="1.00000" length="0.55247"/>
+        <sphere radius="1.44094"/>
       </geometry>
     </collision>
     <inertial>
@@ -64,7 +58,7 @@
     <collision name="Cube.002_collision">
       <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 0.00000 -0.10977"/>
       <geometry>
-        <cylinder radius="1.00000" length="0.55247"/>
+        <sphere radius="1.44094"/>
       </geometry>
     </collision>
     <inertial>
@@ -84,7 +78,7 @@
     <collision name="Cube.003_collision">
       <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10977"/>
       <geometry>
-        <cylinder radius="1.00000" length="0.55247"/>
+        <sphere radius="1.44094"/>
       </geometry>
     </collision>
     <inertial>

@@ -40,8 +40,8 @@ if args.physics_engine == gymapi.SIM_FLEX:
 elif args.physics_engine == gymapi.SIM_PHYSX:
     sim_params.physx.solver_type = 1
     sim_params.physx.num_position_iterations = 6
-    sim_params.physx.num_velocity_iterations = 0
-    sim_params.physx.num_threads = args.num_threads
+    sim_params.physx.num_velocity_iterations = 6
+    sim_params.physx.num_threads = 3
     sim_params.physx.use_gpu = args.use_gpu
 
 sim_params.use_gpu_pipeline = False
@@ -101,9 +101,12 @@ gym.set_actor_dof_properties(env, actor_handle, props)
 shape_props = gym.get_actor_rigid_shape_properties(env, actor_handle)
 # set_actor_rigid_shape_properties enables setting shape properties for rigid body
 # Properties include friction, rolling_friction, torsion_friction, restitution etc.
-shape_props[0].friction = 1.
-shape_props[0].rolling_friction = 1.
-shape_props[0].torsion_friction = 1.
+for i in shape_props:
+    i.friction = 100.
+    i.rolling_friction = 100.
+    i.torsion_friction = 100.
+    i.restitution = 0.1
+    i.thickness = 0.1
 gym.set_actor_rigid_shape_properties(env, actor_handle, shape_props)
 
 jointhandle = gym.find_actor_dof_handle(env, actor_handle, 'rw')
@@ -126,17 +129,14 @@ while not gym.query_viewer_has_closed(viewer):
 
     speed+=0.0001
     dof_states[0][0]+=-speed
-    dof_states[0][1]=-speed
 
     dof_states[1][0]+=speed
-    dof_states[1][1]=speed
 
     dof_states[2][0]+=-speed
-    dof_states[2][1]=-speed
     print(gym.get_dof_position(env, jointhandle))
-    gym.set_dof_target_position(env, jointhandle, angle)
-    gym.set_dof_target_velocity(env, jointhandle, 1)
-    #gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
+    # gym.set_dof_target_position(env, jointhandle, angle)
+    # gym.set_dof_target_velocity(env, jointhandle, 1)
+    gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
 
 
     # Wait for dt to elapse in real time.
