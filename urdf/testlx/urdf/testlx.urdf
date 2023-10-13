@@ -1,0 +1,42 @@
+<robot name="testlx" version="1.0">
+  <joint name="new_link.000_joint" type="revolute">
+    <limit lower="0.00000" upper="0.00000" effort="0.54000" velocity="0.48000"/>
+    <origin rpy="-0.72994 -0.00000 0.00000" xyz="-0.07667 2.05628 2.06295"/>
+    <parent link="myroot"/>
+    <child link="sub"/>
+    <axis xyz="0.00000 0.00000 1.00000"/>
+  </joint>
+  <link name="myroot">
+    <collision name="Cube_collision">
+      <origin rpy="-0.00000 1.57080 0.00000" xyz="0.48929 -0.02468 0.00386"/>
+      <geometry>
+        <cylinder radius="1.02468" length="2.97858"/>
+      </geometry>
+    </collision>
+    <visual name="Cube">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <material name="Material"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Cube.stl" scale="1.00000 1.00000 1.00000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="sub">
+    <collision name="Cube.001_collision">
+      <origin rpy="2.48247 1.57080 2.48247" xyz="0.20880 0.77614 -0.75511"/>
+      <geometry>
+        <cylinder radius="1.00000" length="2.00000"/>
+      </geometry>
+    </collision>
+    <visual name="Cube.001">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.20880 0.77614 -0.75511"/>
+      <material name="Material"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Cube.001.stl" scale="1.00000 1.00000 1.00000"/>
+      </geometry>
+    </visual>
+  </link>
+  <material name="Material">
+    <color rgba="0.80000 0.80000 0.80000 1.00000"/>
+  </material>
+</robot>
